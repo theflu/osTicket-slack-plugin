@@ -8,10 +8,16 @@ class SlackPluginConfig extends PluginConfig {
       'slack' => new SectionBreakField(array(
         'label' => 'Slack notifier',
        )),
-       'slack-channel' => new TextboxField(array(
-         'label' => 'Slack Channel',
+       'slack-dept-id' => new TextboxField(array(
+         'label' => 'Department ID',
+         'default' => 0,
+         'hint' => '0 is all departments',
          'configuration' => array('size'=>20, 'length'=>100),
-       )),			            
+       )),
+        'slack-channel' => new TextboxField(array(
+            'label' => 'Slack Channel',
+            'configuration' => array('size'=>20, 'length'=>100),
+        )),
        'slack-username' => new TextboxField(array(
          'label' => 'Slack Username',
          'default' => 'osTicket',

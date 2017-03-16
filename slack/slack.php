@@ -21,9 +21,11 @@ class SlackPlugin extends Plugin {
     $channel = $this->getConfig()->get('slack-channel');
     $icon_emoji = ':' . $this->getConfig()->get('slack-icon-emoji') . ':';
     $username = $this->getConfig()->get('slack-username');
+    $dept_id = $this->getConfig()->get('slack-dept-id');;
 
     //Grab useful data to post
     $ticket_id = $ticket->getId();
+    $ticket_dept_id = $ticket->getDeptId();
     $ticket_url = $ost->getConfig()->getUrl() . 'scp/tickets.php?id=' . $ticket_id;
     $ticket_number = $ticket->getNumber();
     $ticket_subject = $ticket->getSubject();
@@ -59,24 +61,25 @@ class SlackPlugin extends Plugin {
                     ))
             ));
     
-	
-    //Curl setting and execution
-    $ch = curl_init($slack_url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch,CURLOPT_TIMEOUT,10);
-    $slack_result = curl_exec($ch);
-    $curl_errno = curl_errno($ch);
-    $curl_error = curl_error($ch);
-    curl_close($ch);
-
-    //Catch Curl errors and post them in the log file
-    if ($curl_errno > 0) {
-      error_log('Slack Curl Error ' . $curl_error);    
-    } 
-    else if($slack_result != 'ok') {
-      error_log('Slack Curl Error (Check your webhook URL): ' . $slack_result);    
-    }
+	if ($dept_id == 0 || $ticket_dept_id == $dept_id) {
+        //Curl setting and execution
+        $ch = curl_init($slack_url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch,CURLOPT_TIMEOUT,10);
+        $slack_result = curl_exec($ch);
+        $curl_errno = curl_errno($ch);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+    
+        //Catch Curl errors and post them in the log file
+        if ($curl_errno > 0) {
+          error_log('Slack Curl Error ' . $curl_error);    
+        } 
+        else if($slack_result != 'ok') {
+          error_log('Slack Curl Error (Check your webhook URL): ' . $slack_result);    
+        }
+	}
   }
 }
